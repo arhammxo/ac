@@ -17,7 +17,6 @@
       background-size: 200% 200%;
       font-family: 'Montserrat', sans-serif;
       overflow: hidden;
-      transition: background 3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       animation: gradientPosition 15s ease infinite;
     }
@@ -32,6 +31,10 @@
       100% {
         background-position: 0% 50%;
       }
+    }
+    
+    .transition-bg {
+      transition: background 2s ease-in-out;
     }
     
     body:before {
@@ -408,7 +411,16 @@
           currentGradient = gradientColors;
           const angle = Math.floor(Math.random() * 360); // Random angle for variety
           
-          // First, stop the existing animation if any
+          // First, remove the transition class to reset
+          document.body.classList.remove('transition-bg');
+          
+          // Force a reflow to ensure the class removal takes effect
+          void document.body.offsetWidth;
+          
+          // Add the transition class
+          document.body.classList.add('transition-bg');
+          
+          // Stop the existing animation if any
           document.body.style.animation = 'none';
           
           // Apply the new gradient with background-size for the transition effect
@@ -418,8 +430,10 @@
           // Force reflow to ensure the animation restarts properly
           void document.body.offsetWidth;
           
-          // Restart the gradient animation
-          document.body.style.animation = 'gradientPosition 15s ease infinite';
+          // Restart the gradient animation after a short delay to allow transition to start
+          setTimeout(() => {
+            document.body.style.animation = 'gradientPosition 15s ease infinite';
+          }, 100);
         }
       } else if (lastAngelTime) {
         // Remove glow after 3 seconds but keep the gradient
