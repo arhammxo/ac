@@ -647,6 +647,9 @@
       
       // Update button text to show current format
       formatTextElement.textContent = is24Hour ? '24h Format' : '12h Format';
+      
+      // Update clock width based on format
+      clockElement.style.minWidth = is24Hour ? '400px' : '550px';
     });
     
     // Update button active states
