@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Angel Number Clock</title>
+  <link rel="icon" type="image/png" href="icon.png">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
@@ -17,6 +18,7 @@
       background-size: 200% 200%;
       font-family: 'Montserrat', sans-serif;
       overflow: hidden;
+      transition: background 5s cubic-bezier(0.22, 1, 0.36, 1);
       position: relative;
       animation: gradientPosition 15s ease infinite;
     }
@@ -31,10 +33,6 @@
       100% {
         background-position: 0% 50%;
       }
-    }
-    
-    .transition-bg {
-      transition: background 2s ease-in-out;
     }
     
     body:before {
@@ -408,32 +406,28 @@
         
         // Apply the new gradient if it's different from the current one
         if (gradientColors && !arraysEqual(gradientColors, currentGradient)) {
-          currentGradient = gradientColors;
-          const angle = Math.floor(Math.random() * 360); // Random angle for variety
+          // Store previous gradient colors for transition
+          const prevGradient = [...currentGradient];
           
-          // First, remove the transition class to reset
-          document.body.classList.remove('transition-bg');
+          // Update current gradient to new colors
+          currentGradient = [...gradientColors];
           
-          // Force a reflow to ensure the class removal takes effect
-          void document.body.offsetWidth;
-          
-          // Add the transition class
-          document.body.classList.add('transition-bg');
-          
-          // Stop the existing animation if any
+          // First, stop the existing animation if any
           document.body.style.animation = 'none';
           
-          // Apply the new gradient with background-size for the transition effect
+          // Create a temporary transitional gradient that will smoothly change over 2 seconds
+          const angle = Math.floor(Math.random() * 360); // Random angle for variety
+          
+          // Apply the new gradient - transition happens through CSS transition property
           document.body.style.background = `linear-gradient(${angle}deg, ${gradientColors.join(', ')})`;
           document.body.style.backgroundSize = '200% 200%';
           
-          // Force reflow to ensure the animation restarts properly
-          void document.body.offsetWidth;
-          
-          // Restart the gradient animation after a short delay to allow transition to start
+          // Force reflow to ensure the animation restarts properly after transition completes
           setTimeout(() => {
+            void document.body.offsetWidth;
+            // Restart the gradient animation after the transition
             document.body.style.animation = 'gradientPosition 15s ease infinite';
-          }, 100);
+          }, 5000); // Match this with the transition time (5 seconds)
         }
       } else if (lastAngelTime) {
         // Remove glow after 3 seconds but keep the gradient
