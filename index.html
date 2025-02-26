@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Angel Number Clock</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
@@ -12,93 +13,203 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: linear-gradient(45deg, #6e45e2, #88d3ce);
-      font-family: 'Arial', sans-serif;
+      background: linear-gradient(45deg, #6e45e2, #88d3ce, #6e45e2);
+      background-size: 200% 200%;
+      font-family: 'Montserrat', sans-serif;
       overflow: hidden;
+      transition: background 3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      animation: gradientPosition 15s ease infinite;
+    }
+    
+    @keyframes gradientPosition {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    body:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+    
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      width: 4px;
+      height: 4px;
+      animation: float 15s infinite linear;
+      opacity: 0;
+    }
+    
+    @keyframes float {
+      0% {
+        transform: translateY(0) translateX(0);
+        opacity: 0;
+      }
+      10% {
+        opacity: 0.8;
+      }
+      90% {
+        opacity: 0.8;
+      }
+      100% {
+        transform: translateY(-100vh) translateX(100px);
+        opacity: 0;
+      }
     }
     
     .container {
       text-align: center;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(5px);
+      padding: 3rem;
+      border-radius: 2rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .clock {
-      font-size: 5rem;
+      font-size: 6rem;
+      font-weight: 300;
       color: white;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-      background: rgba(0, 0, 0, 0.2);
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+      background: rgba(0, 0, 0, 0.15);
       padding: 2rem 3rem;
-      border-radius: 1rem;
+      border-radius: 1.5rem;
       margin-bottom: 2rem;
-      transition: all 0.3s ease;
+      transition: all 0.5s ease;
+      letter-spacing: 2px;
+      display: inline-block;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     .message {
-      font-size: 1.5rem;
+      font-size: 1.7rem;
       color: white;
-      margin-top: 1rem;
-      min-height: 3rem;
+      margin-top: 1.5rem;
+      min-height: 3.5rem;
       opacity: 0;
-      transition: opacity 0.5s ease;
+      transition: opacity 0.8s ease;
+      font-weight: 300;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     }
     
     .show-message {
       opacity: 1;
+      animation: fadeIn 1s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
     
     .angel-glow {
-      animation: glow 1.5s ease-in-out infinite alternate;
+      animation: glow 2s ease-in-out infinite alternate;
     }
     
     @keyframes glow {
       from {
-        box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px gold;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 215, 0, 0.4);
       }
       to {
-        box-shadow: 0 0 20px #fff, 0 0 30px #fff, 0 0 40px gold;
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 50px rgba(255, 215, 0, 0.6);
       }
     }
     
     .angel-number {
       color: gold;
-      font-weight: bold;
+      font-weight: 500;
+      position: relative;
+      animation: pulse 1.5s infinite;
+    }
+    
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.8; }
+      100% { opacity: 1; }
     }
     
     .mode-selector {
-      margin-top: 2rem;
+      margin-top: 3rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.8rem;
     }
     
     .mode-selector button {
-      background: rgba(255, 255, 255, 0.3);
-      border: none;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       color: white;
-      padding: 0.5rem 1rem;
-      margin: 0 0.5rem;
-      border-radius: 0.5rem;
+      padding: 0.7rem 1.4rem;
+      border-radius: 2rem;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.4s ease;
+      font-weight: 400;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(5px);
     }
     
     .mode-selector button:hover {
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
     }
     
     .mode-selector button.active {
-      background: rgba(255, 255, 255, 0.7);
-      color: #6e45e2;
+      background: rgba(255, 255, 255, 0.3);
+      color: white;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 style="color: white; margin-bottom: 2rem;">Angel Number Clock</h1>
+    <h1 style="color: white; margin-bottom: 2rem; font-weight: 300; letter-spacing: 3px; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">ANGEL NUMBER CLOCK</h1>
     <div id="clock" class="clock">777</div>
     <div id="message" class="message">Angel numbers are appearing...</div>
     <div class="mode-selector">
-      <button id="all-angels" class="active">All Angel Numbers</button>
+      <button id="all-angels" class="active">✨ All Angel Numbers</button>
       <button id="sevens">777 Only</button>
-      <button id="custom">Custom Angel Pattern</button>
+      <button id="custom">⭐ Custom Pattern</button>
     </div>
   </div>
+  
+  <!-- Floating particles for aesthetic effect -->
+  <div id="particles"></div>
 
   <script>
     // Angel number patterns
@@ -108,6 +219,30 @@
       '1212', '1234', '4321', '1221', '2112', '2121', '2323', '3232', '4545', '5454',
       '1010', '0101', '0000', '0123', '3210'
     ];
+    
+    // Gradient colors for each angel number
+    const angelGradients = {
+      '111': ['#FF5E62', '#FF9966'], // Fiery orange
+      '222': ['#A770EF', '#CF8BF3'], // Purple
+      '333': ['#00C9FF', '#92FE9D'], // Minty blue
+      '444': ['#396afc', '#2948ff'], // Royal blue
+      '555': ['#DA4453', '#89216B'], // Deep magenta
+      '666': ['#000000', '#434343'], // Dark gray
+      '777': ['#FFD700', '#FFA500'], // Golden
+      '888': ['#11998e', '#38ef7d'], // Green
+      '999': ['#8E2DE2', '#4A00E0'], // Violet
+      '1111': ['#FF416C', '#FF4B2B'], // Bright red
+      '1212': ['#12c2e9', '#f64f59'], // Blue to red
+      '1234': ['#C33764', '#1D2671'], // Purple navy
+      '1010': ['#F7971E', '#FFD200'], // Orange-yellow
+      '0000': ['#000046', '#1CB5E0']  // Deep blue
+    };
+    
+    // Default gradient for unlisted angel numbers
+    const defaultGradient = ['#6e45e2', '#88d3ce', '#6e45e2'];
+    
+    // Track the current gradient
+    let currentGradient = defaultGradient;
     
     // Angel number messages
     const angelMessages = {
@@ -227,14 +362,83 @@
       if (isAngelNumber) {
         clockElement.classList.add('angel-glow');
         lastAngelTime = now;
+        
+        // Change background gradient only if a new angel number appears
+        let foundPattern = '';
+        for (const pattern of angelPatterns) {
+          if (timeString.includes(pattern)) {
+            foundPattern = pattern;
+            break;
+          }
+        }
+        
+        // Select the gradient colors
+        let gradientColors;
+        if (mode === 'sevens' && minutes === '07' && seconds === '07') {
+          gradientColors = angelGradients['777'];
+        } else if (mode === 'custom' && customPattern && timeString.includes(customPattern)) {
+          // For custom patterns, generate an aesthetically pleasing gradient
+          const firstDigit = parseInt(customPattern.charAt(0));
+          const lastDigit = parseInt(customPattern.charAt(customPattern.length - 1));
+          
+          // Create a beautiful 3-color gradient based on the digits
+          const hue1 = (firstDigit * 36) % 360; // Map first digit to hue (0-9 → 0-324)
+          const hue2 = (lastDigit * 36) % 360;  // Map last digit to hue
+          
+          gradientColors = [
+            `hsl(${hue1}, 80%, 60%)`,
+            `hsl(${hue2}, 80%, 55%)`,
+            `hsl(${hue1}, 80%, 60%)`
+          ];
+        } else if (foundPattern && angelGradients[foundPattern]) {
+          gradientColors = angelGradients[foundPattern];
+        } else if (isAngelNumber) {
+          // Generate a nice gradient for unlisted angel numbers
+          const seed = timeString.split('').reduce((a, b) => a + parseInt(b), 0);
+          const hue = (seed * 20) % 360;
+          gradientColors = [
+            `hsl(${hue}, 70%, 60%)`,
+            `hsl(${(hue + 60) % 360}, 70%, 50%)`,
+            `hsl(${hue}, 70%, 60%)`
+          ];
+        }
+        
+        // Apply the new gradient if it's different from the current one
+        if (gradientColors && !arraysEqual(gradientColors, currentGradient)) {
+          currentGradient = gradientColors;
+          const angle = Math.floor(Math.random() * 360); // Random angle for variety
+          
+          // First, stop the existing animation if any
+          document.body.style.animation = 'none';
+          
+          // Apply the new gradient with background-size for the transition effect
+          document.body.style.background = `linear-gradient(${angle}deg, ${gradientColors.join(', ')})`;
+          document.body.style.backgroundSize = '200% 200%';
+          
+          // Force reflow to ensure the animation restarts properly
+          void document.body.offsetWidth;
+          
+          // Restart the gradient animation
+          document.body.style.animation = 'gradientPosition 15s ease infinite';
+        }
       } else if (lastAngelTime) {
-        // Keep the glow for 3 seconds after angel number
+        // Remove glow after 3 seconds but keep the gradient
         if ((now - lastAngelTime) > 3000) {
           clockElement.classList.remove('angel-glow');
           lastAngelTime = null;
           messageElement.classList.remove('show-message');
           waitingForAngel = false;
+          // We DON'T reset the gradient here - it stays until a new angel number
         }
+      }
+      
+      // Helper function to compare arrays
+      function arraysEqual(a, b) {
+        if (a.length !== b.length) return false;
+        for (let i = 0; i < a.length; i++) {
+          if (a[i] !== b[i]) return false;
+        }
+        return true;
       }
       
       // Update clock display
@@ -325,7 +529,40 @@
       clockElement.classList.remove('angel-glow');
       lastAngelTime = null;
       waitingForAngel = false;
+      
+      // Don't reset the gradient when changing modes - keep the current one
+      // This allows the beautiful gradients to persist until a new angel number appears
     }
+    
+    // Create floating particles for aesthetic effect
+    function createParticles() {
+      const particlesContainer = document.getElementById('particles');
+      const numParticles = 30;
+      
+      for (let i = 0; i < numParticles; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        
+        // Random positioning
+        const left = Math.random() * 100;
+        const top = Math.random() * 100;
+        const delay = Math.random() * 15;
+        const size = 2 + Math.random() * 3;
+        const duration = 15 + Math.random() * 15;
+        
+        particle.style.left = `${left}%`;
+        particle.style.top = `${top}%`;
+        particle.style.width = `${size}px`;
+        particle.style.height = `${size}px`;
+        particle.style.animationDelay = `${delay}s`;
+        particle.style.animationDuration = `${duration}s`;
+        
+        particlesContainer.appendChild(particle);
+      }
+    }
+    
+    // Initialize particles
+    createParticles();
     
     // Start the clock
     updateClock();
