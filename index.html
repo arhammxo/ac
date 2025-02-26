@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angel Number Clock</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(45deg, #6e45e2, #88d3ce);
+      font-family: 'Arial', sans-serif;
+      overflow: hidden;
+    }
+    
+    .container {
+      text-align: center;
+    }
+    
+    .clock {
+      font-size: 5rem;
+      color: white;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+      background: rgba(0, 0, 0, 0.2);
+      padding: 2rem 3rem;
+      border-radius: 1rem;
+      margin-bottom: 2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .message {
+      font-size: 1.5rem;
+      color: white;
+      margin-top: 1rem;
+      min-height: 3rem;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    
+    .show-message {
+      opacity: 1;
+    }
+    
+    .angel-glow {
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+    
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px gold;
+      }
+      to {
+        box-shadow: 0 0 20px #fff, 0 0 30px #fff, 0 0 40px gold;
+      }
+    }
+    
+    .angel-number {
+      color: gold;
+      font-weight: bold;
+    }
+    
+    .mode-selector {
+      margin-top: 2rem;
+    }
+    
+    .mode-selector button {
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      color: white;
+      padding: 0.5rem 1rem;
+      margin: 0 0.5rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    
+    .mode-selector button:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+    
+    .mode-selector button.active {
+      background: rgba(255, 255, 255, 0.7);
+      color: #6e45e2;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="color: white; margin-bottom: 2rem;">Angel Number Clock</h1>
+    <div id="clock" class="clock">777</div>
+    <div id="message" class="message">Angel numbers are appearing...</div>
+    <div class="mode-selector">
+      <button id="all-angels" class="active">All Angel Numbers</button>
+      <button id="sevens">777 Only</button>
+      <button id="custom">Custom Angel Pattern</button>
+    </div>
+  </div>
+
+  <script>
+    // Angel number patterns
+    const angelPatterns = [
+      '111', '222', '333', '444', '555', '666', '777', '888', '999',
+      '1111', '2222', '3333', '4444', '5555', '6666', '7777', '8888', '9999',
+      '1212', '1234', '4321', '1221', '2112', '2121', '2323', '3232', '4545', '5454',
+      '1010', '0101', '0000', '0123', '3210'
+    ];
+    
+    // Angel number messages
+    const angelMessages = {
+      '111': 'New beginnings and manifestation',
+      '222': 'Balance, harmony, and trust',
+      '333': 'Spiritual growth and creative expression',
+      '444': 'Protection and guidance',
+      '555': 'Positive change and transformation',
+      '666': 'Balance your spiritual and material aspects',
+      '777': 'Divine luck and spiritual awakening',
+      '888': 'Abundance and financial prosperity',
+      '999': 'Completion and universal love',
+      '1111': 'Spiritual awakening and manifestation',
+      '1212': 'Spiritual evolution and enlightenment',
+      '1234': 'Sequential progress and moving forward',
+      '1010': 'Optimism and encouragement',
+      '0000': 'Infinite potential and divine support'
+    };
+    
+    // Default message for other angel patterns
+    const defaultMessage = 'Divine energy surrounds you';
+    
+    // DOM elements
+    const clockElement = document.getElementById('clock');
+    const messageElement = document.getElementById('message');
+    const allAngelsBtn = document.getElementById('all-angels');
+    const sevensBtn = document.getElementById('sevens');
+    const customBtn = document.getElementById('custom');
+    
+    // Clock modes
+    let mode = 'all-angels'; // 'all-angels', 'sevens', 'custom'
+    let customPattern = null;
+    let lastAngelTime = null;
+    let waitingForAngel = false;
+    
+    // Set up clock update interval
+    function updateClock() {
+      const now = new Date();
+      let hours = now.getHours().toString().padStart(2, '0');
+      let minutes = now.getMinutes().toString().padStart(2, '0');
+      let seconds = now.getSeconds().toString().padStart(2, '0');
+      
+      let timeString = `${hours}${minutes}${seconds}`;
+      let display = `${hours}:${minutes}:${seconds}`;
+      let isAngelNumber = false;
+      
+      // Check if the current time contains an angel pattern
+      if (mode === 'sevens') {
+        // Show only 777 (at 07:07:07 or 19:07:07)
+        if (minutes === '07' && seconds === '07') {
+          isAngelNumber = true;
+          display = '7:77:77';
+          showMessage('777', 'Divine luck and spiritual awakening');
+        } else if (!waitingForAngel) {
+          // Calculate time until next 777
+          const nextSevenTime = calculateNextSevenTime(now);
+          if (nextSevenTime) {
+            const timeDiff = Math.floor((nextSevenTime - now) / 1000);
+            if (timeDiff <= 300) { // 5 minutes threshold
+              waitingForAngel = true;
+              showMessage('', `Next 777 appearance in ${formatTimeDiff(timeDiff)}`);
+            }
+          }
+        }
+      } else if (mode === 'all-angels') {
+        // Check for angel patterns in the current time
+        for (const pattern of angelPatterns) {
+          if (timeString.includes(pattern)) {
+            isAngelNumber = true;
+            
+            // Highlight the angel number in the display
+            let tempDisplay = display;
+            const patternRegex = new RegExp(pattern.split('').join('[^0-9]*'));
+            const matches = timeString.match(patternRegex);
+            
+            if (matches) {
+              const startIdx = timeString.indexOf(matches[0]);
+              const endIdx = startIdx + matches[0].length - 1;
+              
+              // Calculate positions in the formatted display
+              let displayIdx = 0;
+              let startDisplayIdx = -1;
+              let endDisplayIdx = -1;
+              
+              for (let i = 0; i < timeString.length; i++) {
+                if (i === startIdx) startDisplayIdx = displayIdx;
+                if (i === endIdx) endDisplayIdx = displayIdx;
+                
+                displayIdx++;
+                if (i === 1 || i === 3) displayIdx++; // Account for colons
+              }
+              
+              // Split the display string to insert spans
+              if (startDisplayIdx >= 0 && endDisplayIdx >= 0) {
+                const before = display.substring(0, startDisplayIdx);
+                const angel = display.substring(startDisplayIdx, endDisplayIdx + 1);
+                const after = display.substring(endDisplayIdx + 1);
+                
+                display = `${before}<span class="angel-number">${angel}</span>${after}`;
+              }
+            }
+            
+            // Show message for this angel number
+            showMessage(pattern, angelMessages[pattern] || defaultMessage);
+            break;
+          }
+        }
+      } else if (mode === 'custom' && customPattern) {
+        // Check for custom pattern
+        if (timeString.includes(customPattern)) {
+          isAngelNumber = true;
+          showMessage(customPattern, 'Your special angel number has appeared!');
+        }
+      }
+      
+      // Apply angel glow effect when angel number appears
+      if (isAngelNumber) {
+        clockElement.classList.add('angel-glow');
+        lastAngelTime = now;
+      } else if (lastAngelTime) {
+        // Keep the glow for 3 seconds after angel number
+        if ((now - lastAngelTime) > 3000) {
+          clockElement.classList.remove('angel-glow');
+          lastAngelTime = null;
+          messageElement.classList.remove('show-message');
+          waitingForAngel = false;
+        }
+      }
+      
+      // Update clock display
+      clockElement.innerHTML = display;
+      
+      // Schedule next update
+      setTimeout(updateClock, 1000);
+    }
+    
+    // Show angel number message
+    function showMessage(pattern, message) {
+      messageElement.textContent = message;
+      messageElement.classList.add('show-message');
+    }
+    
+    // Calculate next time 777 will appear
+    function calculateNextSevenTime(currentTime) {
+      const now = new Date(currentTime);
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
+      
+      let nextTime = new Date(now);
+      
+      // Check for 07:07:07
+      if (hours < 7 || (hours === 7 && (minutes < 7 || (minutes === 7 && seconds < 7)))) {
+        nextTime.setHours(7, 7, 7, 0);
+        return nextTime;
+      }
+      
+      // Check for 19:07:07
+      if (hours < 19 || (hours === 19 && (minutes < 7 || (minutes === 7 && seconds < 7)))) {
+        nextTime.setHours(19, 7, 7, 0);
+        return nextTime;
+      }
+      
+      // Next 07:07:07 tomorrow
+      nextTime.setDate(nextTime.getDate() + 1);
+      nextTime.setHours(7, 7, 7, 0);
+      return nextTime;
+    }
+    
+    // Format time difference in human-readable format
+    function formatTimeDiff(seconds) {
+      if (seconds < 60) {
+        return `${seconds} seconds`;
+      } else if (seconds < 3600) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins} minute${mins !== 1 ? 's' : ''} ${secs > 0 ? `and ${secs} seconds` : ''}`;
+      } else {
+        const hours = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        return `${hours} hour${hours !== 1 ? 's' : ''} and ${mins} minute${mins !== 1 ? 's' : ''}`;
+      }
+    }
+    
+    // Mode selection event listeners
+    allAngelsBtn.addEventListener('click', () => {
+      mode = 'all-angels';
+      updateButtonStates();
+    });
+    
+    sevensBtn.addEventListener('click', () => {
+      mode = 'sevens';
+      updateButtonStates();
+    });
+    
+    customBtn.addEventListener('click', () => {
+      const input = prompt('Enter your custom angel number pattern (e.g., 123, 888, 1221):', '');
+      if (input && input.match(/^\d+$/)) {
+        customPattern = input;
+        mode = 'custom';
+        updateButtonStates();
+      } else if (input !== null) {
+        alert('Please enter a valid number pattern.');
+      }
+    });
+    
+    // Update button active states
+    function updateButtonStates() {
+      allAngelsBtn.classList.toggle('active', mode === 'all-angels');
+      sevensBtn.classList.toggle('active', mode === 'sevens');
+      customBtn.classList.toggle('active', mode === 'custom');
+      
+      // Reset message and glow
+      messageElement.classList.remove('show-message');
+      clockElement.classList.remove('angel-glow');
+      lastAngelTime = null;
+      waitingForAngel = false;
+    }
+    
+    // Start the clock
+    updateClock();
+  </script>
+</body>
+</html>
