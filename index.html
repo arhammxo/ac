@@ -107,9 +107,14 @@
       margin-bottom: 2rem;
       transition: all 0.5s ease;
       letter-spacing: 2px;
-      display: inline-block;
+      /* Change from inline-block to block with fixed width */
+      display: block;
       position: relative;
       border: 1px solid rgba(255, 255, 255, 0.1);
+      min-width: 400px; /* Set minimum width */
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
     }
     
     .message {
@@ -160,8 +165,68 @@
       100% { opacity: 1; }
     }
     
-    .mode-selector {
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5rem;
       margin-top: 3rem;
+    }
+    
+    /* Updated format toggle styling */
+    .format-toggle {
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 2;
+    }
+    
+    .format-btn {
+      background: rgba(255, 255, 255, 0.25);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 0.8rem 1.8rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .format-btn:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(255,255,255,0.1), rgba(255,255,255,0), rgba(255,255,255,0.1));
+      z-index: -1;
+      transform: translateX(-100%);
+      transition: transform 0.6s ease;
+    }
+    
+    .format-btn:hover:before {
+      transform: translateX(100%);
+    }
+    
+    .format-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 7px 20px rgba(0, 0, 0, 0.25);
+    }
+    
+    .format-btn.active {
+      background: rgba(255, 255, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.6);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+    }
+    
+    .mode-selector {
       display: flex;
       justify-content: center;
       gap: 0.8rem;
@@ -195,6 +260,28 @@
       transform: translateY(-3px);
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
+    
+    /* Format icons */
+    .format-icon {
+      display: inline-block;
+      margin: 0 0.3rem;
+      position: relative;
+      top: 2px;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      .clock {
+        font-size: 4rem;
+        min-width: 280px;
+        padding: 1.5rem 2rem;
+      }
+      
+      .format-btn {
+        padding: 0.7rem 1.4rem;
+        font-size: 1rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -202,10 +289,20 @@
     <h1 style="color: white; margin-bottom: 2rem; font-weight: 300; letter-spacing: 3px; text-shadow: 0 2px 8px rgba(0,0,0,0.2);">ANGEL NUMBER CLOCK</h1>
     <div id="clock" class="clock">777</div>
     <div id="message" class="message">Angel numbers are appearing...</div>
-    <div class="mode-selector">
-      <button id="all-angels" class="active">✨ All Angel Numbers</button>
-      <button id="sevens">777 Only</button>
-      <button id="custom">⭐ Custom Pattern</button>
+    
+    <div class="controls">
+      <div class="format-toggle">
+        <button id="time-format" class="format-btn">
+          <span class="format-icon">⏱️</span> 
+          <span id="format-text">24h Format</span>
+        </button>
+      </div>
+      
+      <div class="mode-selector">
+        <button id="all-angels" class="active">✨ All Angel Numbers</button>
+        <button id="sevens">777 Only</button>
+        <button id="custom">⭐ Custom Pattern</button>
+      </div>
     </div>
   </div>
   
@@ -272,22 +369,39 @@
     const allAngelsBtn = document.getElementById('all-angels');
     const sevensBtn = document.getElementById('sevens');
     const customBtn = document.getElementById('custom');
+    const timeFormatBtn = document.getElementById('time-format');
+    const formatTextElement = document.getElementById('format-text');
     
     // Clock modes
     let mode = 'all-angels'; // 'all-angels', 'sevens', 'custom'
     let customPattern = null;
     let lastAngelTime = null;
     let waitingForAngel = false;
+    let is24Hour = true; // Default to 24-hour format
+    
+    // Initialize format button state
+    timeFormatBtn.classList.add('active');
     
     // Set up clock update interval
     function updateClock() {
       const now = new Date();
-      let hours = now.getHours().toString().padStart(2, '0');
+      let hours = now.getHours();
+      let ampm = '';
+      
+      // Handle 12-hour format
+      if (!is24Hour) {
+        ampm = hours >= 12 ? ' PM' : ' AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // Convert 0 to 12 for midnight
+      }
+      
+      // Format the time strings
+      let hoursStr = hours.toString().padStart(2, '0');
       let minutes = now.getMinutes().toString().padStart(2, '0');
       let seconds = now.getSeconds().toString().padStart(2, '0');
       
-      let timeString = `${hours}${minutes}${seconds}`;
-      let display = `${hours}:${minutes}:${seconds}`;
+      let timeString = `${is24Hour ? hoursStr : hours}${minutes}${seconds}`;
+      let display = `${is24Hour ? hoursStr : hours}:${minutes}:${seconds}${ampm}`;
       let isAngelNumber = false;
       
       // Check if the current time contains an angel pattern
@@ -524,6 +638,15 @@
       } else if (input !== null) {
         alert('Please enter a valid number pattern.');
       }
+    });
+
+    // Time format toggle event listener
+    timeFormatBtn.addEventListener('click', () => {
+      is24Hour = !is24Hour;
+      timeFormatBtn.classList.toggle('active');
+      
+      // Update button text to show current format
+      formatTextElement.textContent = is24Hour ? '24h Format' : '12h Format';
     });
     
     // Update button active states
